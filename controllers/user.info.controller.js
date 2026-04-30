@@ -1,22 +1,26 @@
 
-
-import {userService} from "../services/user.info.service.js"
+import {userInfoService} from "../services/user.info.service.js"
 
 export const actionUserInfoById = async (req, res) => {
     try {
         const { id: userId } = req.params
+        const {body:userData} = req
         let response
         switch (req.method) {
             case "DELETE":
-                response = await userService.deleteUserInfoById(userId);
+                response = await userInfoService.deleteUserInfoById(userId);
+                break
             case "POST":
-                response = await userService.postUserInfoById(userId);
+                response = await userInfoService.postUserInfoById(userId,userData);
+                break
             case "PUT":
-                response = await userService.updateUserInfoById(userId);
+                response = await userInfoService.updateUserInfoById(userId,userData);
+                break
             default:
-                response = await userService.getUserInfoById(userId);
+                response = await userInfoService.getUserInfoById(userId);
         }
-        res.status(200).json(response)
+        const  {status,...cleanData} = response
+        res.status(response.status || 200).json(cleanData)
     } catch (error) {
         res.status(error.status || 500).send(error.message)
     }

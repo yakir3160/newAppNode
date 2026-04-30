@@ -8,4 +8,5 @@ const router = Router();
 router.use("/products",prodUrls)
 router.use("/users",userUrls)
 router.use('/orders',orderUrls)
+
 export default router
