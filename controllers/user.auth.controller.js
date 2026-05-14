@@ -4,8 +4,8 @@ import { userAuthService } from "../services/user.auth.service.js"
 
 export const logUser = async (req, res) => {
     try {
-        const { body: userAuthData } = req
-        const response = await userAuthService.logUser(userAuthData)
+        const { username , password } = req.body
+        const response = await userAuthService.logUser( username , password)
         const { status, ...cleanData } = response
         res.status(response.status || 200).json(cleanData)
     } catch (error) {
