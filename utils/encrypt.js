@@ -2,7 +2,7 @@ import { hash,compare } from "bcrypt";
 
 
 
-export const HashPassword  = async (plainPassword) =>{ 
+export const hashPassword  = async (plainPassword) =>{ 
    try {
     const hashedPassword =  await hash(plainPassword ,10)
         return hashedPassword
@@ -19,4 +19,6 @@ export const comparePasswords = async (plainPassword,hashedPassword) => {
      return error
    }
 
+
 }
+

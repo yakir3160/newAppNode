@@ -1,42 +1,33 @@
-import { HashPassword, comparePasswords } from "../utils/encrypt.js"
+import {hashPassword, comparePasswords } from "../utils/encrypt.js"
 import { creatToken } from "../utils/token.js"
+import { userAuthDal } from "../dal/user.auth.dal.js"
 export const userAuthService = {
-    logUser: async (username, password) => {
+    logUser: async (username,rawPassword) => {
         try {
-            // להביא משתמש לפי שם המשתמש (כולל הסיסמא שלו )
-            // const result = userAuthDal.logUser(username)
-            // לשלוח את הסיסמא המוצפנת מבסיס הנתונים עם הסיסמא שקיבלתי ולהשוות בניהן 
-            // if (!comparePasswords(password, result.password) || result == {})
-            //     throw {
-            //         status: 401,
-            //         message: "username or password in not correct"
-            //     }
-            const result = {
-                id: "13dc21dsc",
-                password: "1sd6cv51sdc"
-            }
-
-            // ליצור טוקן התחברות 
-            const token = await creatToken({ userId: result.id }, { expiresIn: '35d' })
+            const user = await userAuthDal.getUSerByUsername(username, true)
+            console.log(user);        
+            if (! await comparePasswords(rawPassword, user.password) || !user)
+                throw {
+                    status: 400,
+                    message: "username or password incorrect"
+                }
+           console.log("comparePasswords success");
+           
             
-            
-
-            // + טוקן  לנקות את הסיסמא מהאובייקט משתמש ולהחזיר אותו 
-            const { password, ...cleanData } = result;
-
-
-            // 3. מוסיפים את הטוקן לאובייקט הנקי
-            cleanData.token = token;
+            const token = await creatToken({ userId: user.id, role: user.role }, { expiresIn: '35d' })
+            const { password,role, ...cleanData } = user;
 
             return {
                 status: 200,
-                cleanData
+                headers: {
+                    token: token
+                },
+                data: cleanData
             }
+
         } catch (error) {
-            return {
-                status: 400,
-                message:"loguser error"
-            }
+            return error 
+            
         }
     },
     registerUser: async (userAuthData) => {

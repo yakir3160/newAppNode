@@ -3,7 +3,10 @@ import { jwtSecret } from "../config/index.js";
 
 export const creatToken = async (payload, options) => {
     try {
+        console.log("creatToken started");
+        
         const token = await jwt.sign(payload, jwtSecret, options)     
+           console.log("creatToken ended " + token);
         return token
     } catch (error) {
         return error
@@ -20,11 +23,12 @@ export const verifyToken = async (req, res, next) => {
         const token = req.headers.Authorization
         console.log(token, jwtSecret);
 
-        await jwt.verify(token, jwtSecret)
+      const payload =  await jwt.verify(token, jwtSecret)
+        req.Authorization = payload;
         next()
     } catch (error) {
         res.status(error.status).send(error.message)
     }
 
-
 }
+
