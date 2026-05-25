@@ -1,21 +1,21 @@
-import {hashPassword, comparePasswords } from "../utils/encrypt.js"
+import { hashPassword, comparePasswords } from "../utils/encrypt.js"
 import { creatToken } from "../utils/token.js"
 import { userAuthDal } from "../dal/user.auth.dal.js"
 export const userAuthService = {
-    logUser: async (username,rawPassword) => {
+    logUser: async (username, rawPassword) => {
         try {
-            const user = await userAuthDal.getUSerByUsername(username, true)
-            console.log(user);        
+            const user = await userAuthDal.getUserByUsername(username, true)
+            console.log(user);
             if (! await comparePasswords(rawPassword, user.password) || !user)
                 throw {
                     status: 400,
                     message: "username or password incorrect"
                 }
-           console.log("comparePasswords success");
-           
-            
+            console.log("comparePasswords success");
+
+
             const token = await creatToken({ userId: user.id, role: user.role }, { expiresIn: '35d' })
-            const { password,role, ...cleanData } = user;
+            const { password, role, ...cleanData } = user;
 
             return {
                 status: 200,
@@ -26,19 +26,34 @@ export const userAuthService = {
             }
 
         } catch (error) {
-            return error 
-            
+            return error
+
         }
     },
     registerUser: async (userAuthData) => {
         try {
-            return {
-                status: 201,
-                message: "User is registered",
-                userAuthData
-            }
-        } catch (error) {
+            if (!userAuthData.password)
+                throw {
+                    status: 400,
+                    message: "Password is reqired"
+                }
+            const hashedPassword = await hashPassword(userAuthData.password)
+            
+            const user = await userAuthDal.registerNewUser({ ...userAuthData, password: hashedPassword })
 
+            const token = await creatToken({ userId: user.id, role: user.role }, { expiresIn: '35d' })
+            const { password, role, ...cleanData } = user;
+
+            return {
+                status: 200,
+                headers: {
+                    token: token
+                },
+                data: cleanData
+            }
+
+        } catch (error) {
+           return error
         }
     },
     resetUserPassword: async (userAuthData) => {

@@ -2,7 +2,7 @@
 
 
 export const userAuthDal = {
-    getUSerByUsername: async (username, includePassword = false) => {
+    getUserByUsername: async (username, includePassword = false) => {
         try {
             return  includePassword ?  {
                 id:"12345",
