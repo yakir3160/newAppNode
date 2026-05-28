@@ -18,6 +18,7 @@ export const registerUser = async (req, res) => {
         const { body: userAuthData } = req
         const response = await userAuthService.registerUser(userAuthData)
         const { status, ...cleanData } = response
+
         res.status(response.status || 200).json(cleanData)
     } catch (error) {
         res.status(error.status).json(error)

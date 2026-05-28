@@ -18,5 +18,12 @@ export const userAuthDal = {
         } catch (error) {
             return error
         }
+    },
+    registeUser: async (user) =>{
+       try {
+         return user
+       } catch (error) {
+        
+       }
     }
 }
